@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Портфолио</title>
+  <style>
+    :root {
+        --background: #202125;
+        --backgroundText: #00ff77;
+        --color: #eeee;
+        --textColor: #eeeeee;
+        --text: #eeeeee;
+        --accent: #80c7ff;
+        --workspace-width: 1000px;
+    }
+
+    body {
+        isolation: isolate;
+        font-family: sans-serif;
+        background: var(--background);
+        color: var(--textColor);
+
+        margin: 0;
+        min-height: 100vh;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    .workspace {
+        width: min(calc(100% - 48px), var(--workspace-width));
+        min-height: 100vh;
+        margin: 0 auto;
+        padding: 0 48px 72px;
+        border-inline: 1px solid color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+
+    .navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        min-height: 84px;
+        border-bottom: 1px solid color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+
+    .navigation-brand {
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    .navigation-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px 20px;
+        justify-content: flex-end;
+    }
+
+    .navigation a {
+        color: var(--textColor);
+        text-decoration: none;
+        font-size: 13px;
+        transition: color 0.2s;
+    }
+
+    .navigation a:hover,
+    .navigation a:focus-visible { color: var(--accent); }
+
+    .navigation .funny-nav-link {
+        text-decoration: underline;
+        text-underline-offset: 4px;
+    }
+
+    .intro {
+        padding: 88px 0 48px;
+        text-align: left;
+        scroll-margin-top: 24px;
+    }
+
+    .intro h1 {
+        display: table;
+        margin: 0 0 16px;
+        color: var(--accent);
+        font-size: clamp(34px, 5vw, 56px);
+        letter-spacing: -2px;
+        line-height: 1.1;
+    }
+
+    .intro p {
+        display: table;
+        margin: 0;
+        color: color-mix(in srgb, var(--textColor) 65%, transparent);
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 700px) {
+        .workspace { width: calc(100% - 24px); padding-inline: 20px; }
+        .navigation { align-items: flex-start; flex-direction: column; padding-block: 20px; gap: 16px; }
+        .navigation-links { gap: 18px; }
+        .intro { padding-top: 56px; }
+        .workspace .profile-links { grid-template-columns: 1fr; }
+    }
+
+    #binary-rain {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    .profile-links {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18.46px;
+        width: 100%;
+        margin-top: 0;
+        text-align: center;
+        scroll-margin-top: 24px;
+    }
+
+    .profile-card {
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+        box-sizing: border-box;
+        width: 100%;
+        padding: 24.62px;
+        border: 1px solid var(--accent);
+        border-radius: 18.46px;
+        background: linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--accent) 12%, var(--background)),
+            var(--background)
+        );
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .profile-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+
+        background:
+            linear-gradient(#00000070, #00000070),
+            var(--profile-avatar, none) center / cover;
+
+        opacity: 0;
+        transition: opacity 0.6s ease;
+    }
+
+    .profile-card:hover::before {
+        opacity: 1;
+    }
+
+    .profile-card[data-service="codeforces"]::before {
+        transform: scaleX(1.2);
+    }
+
+    .profile-card:hover {
+        transform: translateY(-3.85px);
+        box-shadow: 0 12.31px 30.77px color-mix(in srgb, var(--accent) 18%, transparent);
+    }
+
+    .profile-label {
+        color: var(--accent);
+        font-size: 8.46px;
+        font-weight: bold;
+        letter-spacing: 2.31px;
+    }
+
+    .profile-card h2 {
+        margin: 12.31px 0 6.15px;
+        font-size: 27.69px;
+    }
+
+    .profile-card p {
+        margin-bottom: 18.46px;
+        line-height: 1.6;
+    }
+
+    .profile-action {
+        position: relative;
+        display: inline-flex;
+        isolation: isolate;
+    }
+
+    .profile-button {
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        gap: 18.46px;
+        padding: 10.77px 18.46px;
+        border: none;
+        border-radius: 9.23px;
+        background: var(--accent);
+        color: var(--background);
+        font-size: 12.31px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    /* Блик изначально спрятан слева */
+    .profile-button::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            110deg,
+            transparent 25%,
+            #ffffff80 50%,
+            transparent 75%
+        );
+        transform: translateX(-150%);
+        transition: transform 0.6s;
+    }
+
+    .profile-button:hover::before {
+        transform: translateX(150%);
+    }
+
+    .profile-button span {
+        transition: transform 0.2s;
+    }
+
+    .profile-button:hover span {
+        transform: translate(3px, -3px);
+    }
+
+    .profile-button:active {
+        transform: scale(0.97);
+    }
+
+    
+    .particle {
+        position: fixed;
+        color: var(--accent);
+        font-family: monospace;
+        font-size: 18px;
+        font-weight: bold;
+        text-shadow: 0 0 8px var(--accent);
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        user-select: none;
+        z-index: 1000;
+    }
+    .profile-card[data-service="codeforces"] > h2,
+    .profile-card[data-service="codeforces"] > .profile-action {
+        position: relative;
+        z-index: 1;
+    }
+
+    .particle--telegram {
+        width: 20px;
+        height: 20px;
+        filter: drop-shadow(0 0 5px #229ed9);
+    }
+
+    .explosion-grid {
+        position: absolute;
+        bottom: 0;
+        height: 48px;
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .explosion-cell {
+        position: relative;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .explosion {
+        position: absolute;
+        object-fit: contain;
+        pointer-events: none;
+    }
+
+    .content-section {
+        margin-top: 72px;
+        padding-top: 32px;
+        border-top: 1px solid color-mix(in srgb, var(--accent) 14%, transparent);
+        scroll-margin-top: 28px;
+    }
+    .section-index {
+        color: var(--accent);
+        font: 12px monospace;
+        letter-spacing: 2px;
+    }
+    .content-section > h2 {
+        font-size: clamp(26px, 4vw, 36px);
+        margin: 12px 0 28px;
+        letter-spacing: -1px;
+    }
+    .skills-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    .skill-panel {
+        padding: 24px;
+        border-radius: 18px;
+        border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+        background: color-mix(in srgb, var(--background) 93%, var(--accent));
+    }
+    .skill-panel h3 { margin: 0 0 18px; font-size: 16px; }
+    .skill-panel p { margin: 0; color: #b9bec8; line-height: 1.7; }
+    .skill-tags { display: flex; gap: 10px; flex-wrap: wrap; }
+    .skill-tags span {
+        color: var(--accent);
+        border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font: bold 18px monospace;
+    }
+    .achievement-list { display: grid; gap: 16px; }
+    .achievement {
+        display: grid;
+        grid-template-columns: 110px minmax(0, 1fr);
+        gap: 24px;
+        padding: 24px;
+        border-radius: 18px;
+        border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);
+        background: color-mix(in srgb, var(--background) 96%, var(--accent));
+    }
+    .achievement-year { color: var(--accent); font: 13px monospace; padding-top: 5px; }
+    .achievement h3 { margin: 0 0 10px; font-size: 20px; }
+    .achievement p { color: #b9bec8; margin: 0 0 16px; line-height: 1.6; }
+    .award-badge { display: inline-block; color: #e3c787; font-size: 12px; margin-bottom: 10px; }
+    .award-links { display: flex; gap: 18px; flex-wrap: wrap; }
+    .award-links a { color: var(--accent); text-underline-offset: 4px; font-size: 13px; }
+    .award-links a:hover { color: var(--textColor); }
+    @media (max-width: 700px) {
+        .skills-grid { grid-template-columns: 1fr; }
+        .achievement { grid-template-columns: 1fr; gap: 12px; padding: 20px; }
+        .content-section { margin-top: 48px; }
+    }
+    .site-footer {
+        margin-top: 72px;
+        padding-top: 28px;
+        border-top: 1px solid color-mix(in srgb, var(--accent) 14%, transparent);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 24px;
+        color: color-mix(in srgb, var(--textColor) 55%, transparent);
+        font-size: 12px;
+    }
+
+    .footer-name { margin: 0 0 8px; color: var(--textColor); font-size: 14px; }
+    .footer-note { margin: 0; line-height: 1.6; }
+    .footer-links { display: flex; align-items: center; flex-wrap: wrap; gap: 20px; }
+    .footer-links a {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .footer-links a:hover,
+    .footer-links a:focus-visible { color: var(--accent); }
+    .footer-links .back-to-top {
+        color: var(--accent);
+        border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+        border-radius: 8px;
+        padding: 10px 14px;
+    }
+    .funny-button {
+        position: relative;
+        scroll-margin-block: 100px;
+        padding: 10px 14px;
+        border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+        border-radius: 8px;
+        background: transparent;
+        color: var(--accent);
+        font: inherit;
+        cursor: pointer;
+    }
+    .funny-button:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+    body.funny-mode {
+        background: var(--background) url("funny-background.png") center / 100% 100% no-repeat fixed;
+    }
+    body.funny-mode .profile-card::before {
+        background: var(--background) url("funny-background.png") center / 100% 100% no-repeat;
+        opacity: 1;
+        transform: none;
+    }
+    body.funny-mode img {
+        content: url("funny-background.png");
+        object-fit: fill;
+    }
+    body.funny-mode .profile-card,
+    body.funny-mode .skill-panel,
+    body.funny-mode .achievement {
+        background: linear-gradient(#00000045, #00000045),
+            url("funny-background.png") center / 100% 100% no-repeat;
+        background-color: var(--background);
+    }
+    .funny-button.is-highlighted::before {
+        content: "";
+        position: absolute;
+        inset: -12px -18px;
+        border: 3px solid #ff3535;
+        border-radius: 50%;
+        pointer-events: none;
+        animation: funny-blink 0.5s step-end infinite;
+    }
+    .funny-button.is-highlighted::after {
+        content: "↓";
+        position: absolute;
+        bottom: calc(100% + 12px);
+        left: 50%;
+        transform: translateX(-50%);
+        color: #ff3535;
+        font: bold 48px sans-serif;
+        line-height: 1;
+        pointer-events: none;
+        animation: funny-blink 0.5s step-end infinite;
+    }
+    @keyframes funny-blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        .funny-button.is-highlighted::before,
+        .funny-button.is-highlighted::after { animation: none; }
+    }
+    body.falling-mode { overflow: hidden; }
+    body.falling-mode .workspace { visibility: hidden; }
+    body.falling-mode .falling-piece {
+        visibility: visible;
+        position: fixed !important;
+        margin: 0 !important;
+        transition: none !important;
+        pointer-events: none;
+        z-index: 2000;
+        will-change: transform;
+    }
+    .falling-hint {
+        display: none;
+        position: fixed;
+        bottom: 24px;
+        left: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0 20px;
+        text-align: center;
+        color: #ffffff;
+        opacity: 0.8;
+        font-size: 14px;
+        font-weight: 600;
+        -webkit-text-stroke: 3px #000000;
+        paint-order: stroke fill;
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000,
+                     -1px 1px 0 #000, 1px 1px 0 #000;
+        pointer-events: none;
+        z-index: 10000;
+    }
+    body.falling-mode .falling-hint,
+    body.funny-mode .falling-hint,
+    body.explosion-mode .falling-hint { display: block; }
+    .screen-explosion {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+        pointer-events: none;
+        z-index: 9000;
+    }
+    .flying-avatar {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        border-radius: 18%;
+        background-position: center;
+        background-size: cover;
+        border: 2px solid var(--accent);
+        box-shadow: 0 0 24px #0008;
+        pointer-events: none;
+        z-index: 9500;
+    }
+  </style>
+</head> 
+<body>
+    <canvas id="binary-rain" aria-hidden="true"></canvas>
+    <main class="workspace">
+    <nav class="navigation" aria-label="Основная навигация">
+        <a class="navigation-brand" href="#about">MAGIRCHIK<span aria-hidden="true"> /</span></a>
+        <div class="navigation-links">
+            <a href="#profiles">Мои профили</a>
+            <a href="#skills">Навыки</a>
+            <a href="#achievements">Достижения</a>
+            <a href="#education">Образование</a>
+            <a href="#funny-button" class="funny-nav-link">Смешная кнопка ↓</a>
+            <a href="https://t.me/Magirchik" target="_blank" rel="noopener noreferrer">Связаться ↗</a>
+        </div>
+    </nav>
+    <header class="intro" id="about">
+        <h1>Гладких Егор</h1>
+        <p>Ссылки на ресурсы</p>
+    </header>
+    <section id="profiles" class="profile-links" aria-label="Мои профили">
+    <div class="profile-card" data-service="github" style="--profile-avatar: url('https://github.com/Magirchik.png')">
+        <h2>GitHub</h2>
+
+        <div class="profile-action">
+          <button class="profile-button"
+                onclick="window.open('https://github.com/Magirchik', '_blank', 'noopener,noreferrer')">
+            Смотреть проекты <span>↗</span>
+          </button>
+        </div>
+    </div>
+
+    <div class="profile-card" data-service="codeforces" data-handle="Magirhcik" style="--profile-avatar: url('https://codeforces.com/userpic.codeforces.org/4186441/title/f2295f3464a5f164.jpg')">
+        <h2>Codeforces</h2>
+
+        <div class="profile-action">
+          <button class="profile-button"
+                onclick="window.open('https://codeforces.com/profile/Magirhcik', '_blank', 'noopener,noreferrer')">
+            Смотреть какой я крутой <span>↗</span>
+          </button>
+        </div>
+    </div>
+    <div class="profile-card" data-service="telegram" style="--profile-avatar: url('telegram-avatar.png')">
+        <h2>Telegram</h2>
+
+        <div class="profile-action">
+          <button class="profile-button" type="button"
+                  onclick="window.open('https://t.me/Magirchik', '_blank', 'noopener,noreferrer')">
+            Написать мне <span>↗</span>
+          </button>
+        </div>
+    </div>
+    </section>
+
+    <section class="content-section" id="skills" aria-labelledby="skills-title">
+        <span class="section-index">01 / ЧТО Я УМЕЮ</span>
+        <h2 id="skills-title">Навыки</h2>
+        <div class="skills-grid">
+            <article class="skill-panel">
+                <h3>Языки программирования</h3>
+                <div class="skill-tags"><span>C++</span><span>Python</span></div>
+            </article>
+            <article class="skill-panel">
+                <h3>Спортивное программирование</h3>
+                <p>Решаю алгоритмические задачи, участвую в соревнованиях и олимпиадах по информатике.</p>
+                <div class="award-links" style="margin-top: 18px">
+                    <a href="https://t.me/SportProgrammingForDummies" target="_blank" rel="noopener noreferrer">Канал по спортивному программированию ↗</a>
+                </div>
+            </article>
+        </div>
+    </section>
+    <section class="content-section" id="achievements" aria-labelledby="achievements-title">
+        <span class="section-index">02 / ОЛИМПИАДНЫЙ ПУТЬ</span>
+        <h2 id="achievements-title">Достижения</h2>
+        <div class="achievement-list">
+            <article class="achievement">
+                <div class="achievement-year">2025 / 2026</div>
+                <div>
+                    <span class="award-badge">ДИПЛОМ II СТЕПЕНИ</span>
+                    <h3>Олимпиада «Ломоносов»</h3>
+                    <p>Призёр по информатике. Олимпиадные задания за 11 класс.</p>
+                    <div class="award-links">
+                        <a href="awards/lomonosov-2026.pdf" target="_blank" rel="noopener noreferrer">Открыть диплом PDF ↗</a>
+                        <a href="https://olymp.msu.ru/rus/event/10011/page/4840" target="_blank" rel="noopener noreferrer">Результаты МГУ ↗</a>
+                    </div>
+                </div>
+            </article>
+            <article class="achievement">
+                <div class="achievement-year">2025 / 2026</div>
+                <div>
+                    <span class="award-badge">ПРИЗЁР РЕГИОНАЛЬНОГО ЭТАПА</span>
+                    <h3>ВсОШ по информатике</h3>
+                    <p>Профиль «Программирование», Волгоградская область.</p>
+                    <div class="award-links">
+                        <a href="https://contest.yandex.ru/roi/contest/88394/standings/" target="_blank" rel="noopener noreferrer">Результаты первого тура ↗</a>
+                        <a href="https://contest.yandex.ru/roi/contest/88395/standings/" target="_blank" rel="noopener noreferrer">Результаты второго тура ↗</a>
+                    </div>
+                </div>
+            </article>
+            <article class="achievement">
+                <div class="achievement-year">2024 / 2025</div>
+                <div>
+                    <span class="award-badge">ДИПЛОМ II СТЕПЕНИ</span>
+                    <h3>Олимпиада «Шаг в будущее»</h3>
+                    <p>Призёр по профилю «Программирование», 10 класс.</p>
+                    <div class="award-links">
+                        <a href="https://olymp.bmstu.ru/ru/winners/list/2025/10/programming" target="_blank" rel="noopener noreferrer">Официальный список МГТУ ↗</a>
+                    </div>
+                </div>
+            </article>
+            <article class="achievement">
+                <div class="achievement-year">2024 / 2025</div>
+                <div>
+                    <span class="award-badge">ПРИЗЁР РЕГИОНАЛЬНОГО ЭТАПА</span>
+                    <h3>ВсОШ по информатике</h3>
+                    <p>Волгоградская область, 10 класс.</p>
+                    <div class="award-links">
+                        <a href="awards/vsosh-2025.png" target="_blank" rel="noopener noreferrer">Открыть грамоту ↗</a>
+                        <a href="https://volna-talant.ru/news/prizeram-munitsipalnogo-etapa-vsosh-vruchili-diplomy-i-podarki-/" target="_blank" rel="noopener noreferrer">Публикация центра «Волна» ↗</a>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+    <section class="content-section" id="education" aria-labelledby="education-title">
+        <span class="section-index">03 / ОБРАЗОВАНИЕ</span>
+        <h2 id="education-title">Образование</h2>
+        <article class="achievement">
+            <div class="achievement-year">2026 — 2030</div>
+            <div>
+                <span class="award-badge">БАКАЛАВРИАТ</span>
+                <h3>НИУ ВШЭ — Санкт-Петербург</h3>
+                <p>Прикладной анализ данных и искусственный интеллект</p>
+            </div>
+        </article>
+    </section>
+    <footer class="site-footer">
+        <div>
+            <p class="footer-name">Гладких Егор</p>
+            <p class="footer-note">Код, идеи и завтра дизбанд</p>
+        </div>
+        <nav class="footer-links" aria-label="Ссылки внизу страницы">
+            <a href="https://github.com/Magirchik" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+            <a href="https://t.me/Magirchik" target="_blank" rel="noopener noreferrer">Telegram ↗</a>
+            <button id="funny-button" class="funny-button" type="button" aria-pressed="false">Смешная кнопка</button>
+            <button id="funny-button-2" class="funny-button" type="button" aria-pressed="false">Смешная кнопка 2</button>
+            <button id="funny-button-3" class="funny-button" type="button" aria-pressed="false">Смешная кнопка 3</button>
+            <a href="#about" class="back-to-top">Наверх ↑</a>
+        </nav>
+    </footer>
+    </main>
+    <p class="falling-hint" role="status">Нажмите в любое место, чтобы починить</p>
+    
+    <script>
+        const funnyButton = document.querySelector(".funny-button");
+        const funnyHighlightTimers = new Map();
+        document.querySelectorAll(".funny-nav-link").forEach(link => {
+            link.addEventListener("click", event => {
+                event.preventDefault();
+                funnyButton.closest(".footer-links").scrollIntoView({ block: "center" });
+                document.querySelectorAll("#funny-button, #funny-button-2, #funny-button-3").forEach(target => {
+                clearTimeout(funnyHighlightTimers.get(target));
+                target.classList.add("is-highlighted");
+                funnyHighlightTimers.set(target, setTimeout(() => {
+                    target.classList.remove("is-highlighted");
+                    funnyHighlightTimers.delete(target);
+                }, 3000));
+                });
+            });
+        });
+        function setFunnyMode(enabled) {
+            document.body.classList.toggle("funny-mode", enabled);
+            funnyButton.setAttribute("aria-pressed", String(enabled));
+        }
+        funnyButton.addEventListener("click", () => setFunnyMode(true));
+        // Перехватываем следующий клик до ссылок и кнопок: он только возвращает оформление.
+        document.addEventListener("click", event => {
+            if (!document.body.classList.contains("funny-mode")) return;
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            setFunnyMode(false);
+        }, true);
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape") setFunnyMode(false);
+        });
+
+        const fallingButton = document.querySelector("#funny-button-2");
+        let fallingPieces = [];
+        let fallingFrame;
+        let fallingTime = 0;
+        let fallingScroll = 0;
+
+        function stopFalling() {
+            cancelAnimationFrame(fallingFrame);
+            for (const piece of fallingPieces) {
+                piece.el.classList.remove("falling-piece");
+                if (piece.style === null) piece.el.removeAttribute("style");
+                else piece.el.setAttribute("style", piece.style);
+            }
+            fallingPieces = [];
+            document.body.classList.remove("falling-mode");
+            fallingButton.setAttribute("aria-pressed", "false");
+            fallingButton.textContent = "Смешная кнопка 2";
+            window.scrollTo({ top: fallingScroll, behavior: "instant" });
+        }
+
+        function resolvePieces(a, b) {
+            const dx = b.x + b.w / 2 - a.x - a.w / 2;
+            const dy = b.y + b.h / 2 - a.y - a.h / 2;
+            const ox = (a.w + b.w) / 2 - Math.abs(dx);
+            const oy = (a.h + b.h) / 2 - Math.abs(dy);
+            if (ox <= 0 || oy <= 0) return;
+            const nx = ox < oy ? (dx >= 0 ? 1 : -1) : 0;
+            const ny = ox < oy ? 0 : (dy >= 0 ? 1 : -1);
+            const push = (Math.min(ox, oy) + 0.1) / 2;
+            a.x -= nx * push; b.x += nx * push;
+            a.y -= ny * push; b.y += ny * push;
+            const speed = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+            if (speed < 0) {
+                const impulse = -speed * 0.6;
+                a.vx -= nx * impulse; b.vx += nx * impulse;
+                a.vy -= ny * impulse; b.vy += ny * impulse;
+            }
+        }
+
+        function drawFalling(time) {
+            const dt = Math.min((time - fallingTime) / 1000 || 0, 0.025);
+            fallingTime = time;
+            for (const piece of fallingPieces) {
+                piece.vy += 900 * dt;
+                piece.vx *= Math.exp(-0.6 * dt);
+                piece.x += piece.vx * dt;
+                piece.y += piece.vy * dt;
+            }
+            for (let pass = 0; pass < 6; pass++) {
+                for (let i = 0; i < fallingPieces.length; i++) {
+                    for (let j = i + 1; j < fallingPieces.length; j++) {
+                        resolvePieces(fallingPieces[i], fallingPieces[j]);
+                    }
+                }
+                for (const piece of fallingPieces) {
+                    if (piece.x < 0) { piece.x = 0; piece.vx = Math.abs(piece.vx) * 0.4; }
+                    if (piece.x + piece.w > innerWidth) {
+                        piece.x = Math.max(0, innerWidth - piece.w);
+                        piece.vx = -Math.abs(piece.vx) * 0.4;
+                    }
+                    if (piece.y + piece.h > innerHeight) {
+                        piece.y = innerHeight - piece.h;
+                        piece.vy = -Math.abs(piece.vy) * 0.15;
+                    }
+                }
+            }
+            for (const piece of fallingPieces) {
+                piece.el.style.transform = `translate(${piece.x}px, ${piece.y}px)`;
+            }
+            fallingFrame = requestAnimationFrame(drawFalling);
+        }
+
+        fallingButton.addEventListener("click", () => {
+            if (document.body.classList.contains("falling-mode")) {
+                stopFalling();
+                return;
+            }
+            setFunnyMode(false);
+            fallingScroll = window.scrollY;
+            const elements = [...document.querySelectorAll(
+                ".navigation a, .intro h1, .intro p, .profile-card, " +
+                ".content-section > h2, .skill-panel, .achievement, .footer-name, .footer-note, " +
+                ".footer-links a, #funny-button"
+            )];
+            // Сначала измеряем все элементы, затем меняем их расположение.
+            fallingPieces = elements.map((el, index) => {
+                const rect = el.getBoundingClientRect();
+                const w = Math.min(rect.width, innerWidth - 16);
+                return {
+                    el, style: el.getAttribute("style"), w, h: rect.height,
+                    x: Math.max(0, Math.min(rect.left, innerWidth - w)),
+                    y: rect.top >= 0 && rect.bottom <= innerHeight
+                        ? rect.top : -rect.height - index * 95,
+                    vx: (Math.random() - 0.5) * 160, vy: 0
+                };
+            });
+            document.body.classList.add("falling-mode");
+            for (const piece of fallingPieces) {
+                piece.el.classList.add("falling-piece");
+                Object.assign(piece.el.style, {
+                    left: "0px", top: "0px", width: `${piece.w}px`, height: `${piece.h}px`,
+                    transform: `translate(${piece.x}px, ${piece.y}px)`
+                });
+            }
+            fallingButton.setAttribute("aria-pressed", "true");
+            fallingButton.textContent = "Смешная кнопка 2";
+            fallingTime = 0;
+            fallingFrame = requestAnimationFrame(drawFalling);
+        });
+        document.addEventListener("click", event => {
+            if (!document.body.classList.contains("falling-mode")) return;
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            stopFalling();
+        }, true);
+        window.addEventListener("resize", () => {
+            if (document.body.classList.contains("falling-mode")) stopFalling();
+        });
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape" && document.body.classList.contains("falling-mode")) stopFalling();
+        });
+
+        const explosionButton = document.querySelector("#funny-button-3");
+        let screenExplosionTimer;
+        function stopScreenExplosion() {
+            clearTimeout(screenExplosionTimer);
+            document.querySelector(".screen-explosion")?.remove();
+            document.querySelectorAll(".flying-avatar").forEach(avatar => {
+                avatar.getAnimations().forEach(animation => animation.cancel());
+                avatar.remove();
+            });
+            document.body.classList.remove("explosion-mode");
+            explosionButton.setAttribute("aria-pressed", "false");
+        }
+        function launchAvatars() {
+            const cards = [...document.querySelectorAll(".profile-card")];
+            const count = 18;
+            for (let i = 0; i < count; i++) {
+                const avatar = document.createElement("div");
+                avatar.className = "flying-avatar";
+                avatar.setAttribute("aria-hidden", "true");
+                avatar.style.backgroundImage = cards[i % cards.length].style
+                    .getPropertyValue("--profile-avatar");
+                const size = 42 + Math.random() * 42;
+                avatar.style.width = `${size}px`;
+                avatar.style.height = `${size}px`;
+                document.body.appendChild(avatar);
+
+                const angle = i / count * Math.PI * 2 + Math.random() * 0.2;
+                const distance = Math.hypot(innerWidth, innerHeight) *
+                    (0.4 + Math.random() * 0.3);
+                const x = Math.cos(angle) * distance;
+                const y = Math.sin(angle) * distance;
+                const rotation = (Math.random() - 0.5) * 1080;
+                const animation = avatar.animate([
+                    { transform: "translate(-50%, -50%) scale(0.2)", opacity: 0 },
+                    { transform: "translate(-50%, -50%) scale(1)", opacity: 1, offset: 0.08 },
+                    {
+                        transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) rotate(${rotation}deg) scale(0.6)`,
+                        opacity: 0
+                    }
+                ], { duration: 1600, easing: "cubic-bezier(0.12, 0.65, 0.3, 1)", fill: "forwards" });
+                animation.onfinish = () => avatar.remove();
+            }
+        }
+        explosionButton.addEventListener("click", () => {
+            stopScreenExplosion();
+            const explosion = document.createElement("img");
+            explosion.className = "screen-explosion";
+            explosion.alt = "";
+            explosion.setAttribute("aria-hidden", "true");
+            explosion.addEventListener("load", () => {
+                launchAvatars();
+                screenExplosionTimer = setTimeout(stopScreenExplosion, 1800);
+            }, { once: true });
+            explosion.addEventListener("error", stopScreenExplosion, { once: true });
+            explosion.src = "explosion.gif";
+            document.body.appendChild(explosion);
+            document.body.classList.add("explosion-mode");
+            explosionButton.setAttribute("aria-pressed", "true");
+        });
+        document.addEventListener("click", event => {
+            if (!document.body.classList.contains("explosion-mode")) return;
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            stopScreenExplosion();
+        }, true);
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape") stopScreenExplosion();
+        });
+
+        const canvas = document.querySelector("#binary-rain");
+        const ctx = canvas.getContext("2d");
+        const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+        const obstacles = [...document.querySelectorAll(".intro h1, .intro p, .profile-card")];
+        const rainWords = [
+            "идеи", "проекты", "хочу зп большое",
+            "кампутер", "уже лень",
+            "это кто-то читает?", "random-text12", "гыгыгыгы",
+            "error404", "localhost::8000", "???",
+            "продам гараж +7...", "1", "0", "-_-", "фраза#1013", "сколько их тут?",
+            "апчхи", "дайте оффер", "потенциально топ1", "10к баксов мне на карту",
+            "мой CVC код 123", "мдэээ", "...", "¯\_(ツ)_/¯", "=)", "шизааа", ">:D", ">:(", "пупупу",
+            "как меня зовут?", "что вершит судьбу?", "вы кто такие?", "смешный фразы онлайн", "ой не туда",
+            "маловато", "многовато", "потеха", "бублик", "трив. + очев.", "быть", "или не быть", 
+            "очередной бред", "надо это удалить", "хомяк", "x86", "сааайт", 
+
+        ];
+        let drops = [];
+        let width = 0;
+        let height = 0;
+        let previousTime = 0;
+        let spawnTime = 0;
+        let rainFrame;
+
+        function resizeRain() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            const scale = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.width = Math.round(width * scale);
+            canvas.height = Math.round(height * scale);
+            ctx.setTransform(scale, 0, 0, scale, 0, 0);
+        }
+
+        function collideWords(a, b) {
+            if (a.hasCollided || b.hasCollided) return;
+            const dx = b.x - a.x;
+            const dy = b.y - a.y;
+            const overlapX = a.halfWidth + b.halfWidth + 12 - Math.abs(dx);
+            const overlapY = 24 - Math.abs(dy);
+            if (overlapX <= 0 || overlapY <= 0) return;
+
+            a.hasCollided = b.hasCollided = true;
+            const horizontal = overlapX < overlapY;
+            const nx = horizontal ? (dx >= 0 ? 1 : -1) : 0;
+            const ny = horizontal ? 0 : (dy >= 0 ? 1 : -1);
+            const correction = (horizontal ? overlapX : overlapY) / 2;
+            a.x -= nx * correction;
+            b.x += nx * correction;
+            a.y -= ny * correction;
+            b.y += ny * correction;
+
+            const closingSpeed = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+            if (closingSpeed < 0) {
+                const impulse = -closingSpeed * 0.8;
+                a.vx -= impulse * nx;
+                b.vx += impulse * nx;
+                a.vy -= impulse * ny;
+                b.vy += impulse * ny;
+                a.glow = b.glow = 0.5;
+            }
+        }
+
+        function drawRain(time) {
+            const dt = Math.min((time - previousTime) / 1000 || 0, 0.033);
+            previousTime = time;
+            ctx.clearRect(0, 0, width, height);
+
+            if (!motionPreference.matches) {
+                ctx.font = "bold 16px monospace";
+                spawnTime += dt;
+                while (spawnTime >= 0.2 && drops.length < 90) {
+                    spawnTime -= 0.4;
+                    const text = rainWords[Math.floor(Math.random() * rainWords.length)];
+                    const halfWidth = ctx.measureText(text).width / 2;
+                    let spawnX;
+                    let clearSpace = false;
+                    for (let attempt = 0; attempt < 12; attempt++) {
+                        spawnX = halfWidth + Math.random() * Math.max(0, width - halfWidth * 2);
+                        clearSpace = drops.every(drop => drop.y > 100 ||
+                            Math.abs(drop.x - spawnX) > halfWidth + drop.halfWidth + 40);
+                        if (clearSpace) break;
+                    }
+                    if (!clearSpace) continue;
+                    drops.push({
+                        x: spawnX,
+                        y: -20,
+                        vx: (Math.random() - 0.5) * 30,
+                        vy: 40 + Math.random() * 70,
+                        text,
+                        halfWidth,
+                        hasCollided: false,
+                        age: 0,
+                        glow: 0
+                    });
+                }
+
+                const rects = obstacles.map(element => element.getBoundingClientRect());
+                ctx.font = "bold 16px monospace";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = getComputedStyle(document.documentElement)
+                    .getPropertyValue("--accent").trim() || "#80c7ff";
+
+                for (const drop of drops) {
+                    drop.oldY = drop.y;
+                    drop.age += dt;
+                    drop.vy += 180 * dt;
+                    drop.x += drop.vx * dt;
+                    drop.y += drop.vy * dt;
+                    drop.glow = Math.max(0, drop.glow - dt * 2);
+
+                }
+
+                for (let i = 0; i < drops.length; i++) {
+                    for (let j = i + 1; j < drops.length; j++) {
+                        collideWords(drops[i], drops[j]);
+                    }
+                }
+
+                for (const drop of drops) {
+                    // Удар о верхнюю грань: отскок и скольжение к краю.
+                    for (const rect of rects) {
+                        if (drop.hasCollided) break;
+                        if (drop.vy > 0 && drop.x + drop.halfWidth > rect.left &&
+                            drop.x - drop.halfWidth < rect.right && drop.oldY + 8 <= rect.top &&
+                            drop.y + 8 >= rect.top) {
+                            drop.hasCollided = true;
+                            drop.y = rect.top - 8;
+                            drop.vy = -Math.max(45, drop.vy * 0.5);
+                            const direction = drop.x < rect.left + rect.width / 2 ? -1 : 1;
+                            drop.vx = direction * (45 + Math.random() * 55);
+                            drop.glow = 1;
+                            break;
+                        }
+                    }
+
+                    ctx.globalAlpha = Math.min(1, drop.age * 2) *
+                        Math.min(1, (18 - drop.age) / 2) * (0.25 + drop.glow * 0.4);
+                    ctx.fillText(drop.text, drop.x, drop.y);
+                }
+                drops = drops.filter(drop => drop.y < height + 30 &&
+                    drop.x + drop.halfWidth > -30 && drop.x - drop.halfWidth < width + 30 && drop.age < 18);
+                ctx.globalAlpha = 1;
+            }
+            rainFrame = requestAnimationFrame(drawRain);
+        }
+
+        function restartRain() {
+            cancelAnimationFrame(rainFrame);
+            previousTime = 0;
+            spawnTime = 0;
+            drops = [];
+            ctx.clearRect(0, 0, width, height);
+            if (!document.hidden && !motionPreference.matches) {
+                rainFrame = requestAnimationFrame(drawRain);
+            }
+        }
+
+        window.addEventListener("resize", resizeRain);
+        document.addEventListener("visibilitychange", restartRain);
+        motionPreference.addEventListener("change", restartRain);
+        resizeRain();
+        restartRain();
+
+        document.querySelectorAll(".profile-button").forEach(button => {
+        button.addEventListener("pointerenter", () => {
+            if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+            const rect = button.getBoundingClientRect();
+
+            const isCodeforces = button.closest(".profile-card").dataset.service === "codeforces";
+            if (isCodeforces) {
+                const card = button.closest(".profile-card");
+                card.querySelector(".explosion-grid")?.remove();
+                const grid = document.createElement("div");
+                grid.className = "explosion-grid";
+                grid.setAttribute("aria-hidden", "true");
+
+                const cardRect = card.getBoundingClientRect();
+                const buttonRect = button.getBoundingClientRect();
+                grid.style.left = `${buttonRect.left - cardRect.left - card.clientLeft}px`;
+                grid.style.width = `${buttonRect.width}px`;
+                card.appendChild(grid);
+
+                const cells = Array.from({ length: 7 }, () => {
+                    const cell = document.createElement("div");
+                    cell.className = "explosion-cell";
+                    grid.appendChild(cell);
+                    return cell;
+                });
+                for (let i = cells.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [cells[i], cells[j]] = [cells[j], cells[i]];
+                }
+                const count = 5 + Math.floor(Math.random() * 3);
+                for (const cell of cells.slice(0, count)) {
+                    const explosion = document.createElement("img");
+                    explosion.className = "explosion";
+                    explosion.alt = "";
+                    explosion.src = "explosion.gif";
+                    const size = Math.min(cell.clientWidth, cell.clientHeight) * (0.75 + Math.random() * 0.25);
+                    explosion.style.width = `${size}px`;
+                    explosion.style.height = `${size}px`;
+                    explosion.style.left = `${Math.random() * (cell.clientWidth - size)}px`;
+                    explosion.style.bottom = "0";
+                    cell.appendChild(explosion);
+                }
+                setTimeout(() => grid.remove(), 1200);
+                return;
+            }
+
+            const isTelegram = button.closest(".profile-card").dataset.service === "telegram";
+            const count = 24;
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement(isTelegram ? "img" : "span");
+                particle.className = "particle";
+                if (isTelegram) {
+                    particle.classList.add("particle--telegram");
+                    particle.src = "telegram.svg";
+                    particle.alt = "";
+                } else {
+                    particle.textContent = Math.random() < 0.5 ? "0" : "1";
+                }
+                particle.setAttribute("aria-hidden", "true");
+
+                const angle = Math.random() * Math.PI * 2;
+                const x = Math.cos(angle);
+                const y = Math.sin(angle);
+                const edge = Math.min(
+                    rect.width / 2 / Math.abs(x),
+                    rect.height / 2 / Math.abs(y)
+                );
+
+                particle.style.left = `${rect.left + rect.width / 2 + x * edge}px`;
+                particle.style.top = `${rect.top + rect.height / 2 + y * edge}px`;
+                document.body.appendChild(particle);
+
+                const distance = 35 + Math.random() * 85;
+                const rotation = Math.random() * 120 - 60;
+                const animation = particle.animate([
+                    { transform: "translate(-50%, -50%) scale(0.7)", opacity: 1 },
+                    {
+                        transform: `translate(calc(-50% + ${x * distance}px), calc(-50% + ${y * distance}px)) rotate(${rotation}deg) scale(0.2)`,
+                        opacity: 0
+                    }
+                ], {
+                    duration: 600 + Math.random() * 400,
+                    easing: "ease-out"
+                });
+
+                animation.onfinish = () => particle.remove();
+            }
+        });
+        });
+    </script>
+</body>
+</html>
